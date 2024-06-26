@@ -10,5 +10,5 @@ This is an assignment from [The Odin Project](https://www.theodinproject.com/les
 - Guess letters every turn.
     - Correct guesses count towards the final guess to win the game. 
     - Too many incorrect guesses cause you to lose the game.
-- Save games to disk or load save from previous games.
+- Save games to disk or load saves from previous games.
 
