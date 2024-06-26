@@ -12,26 +12,23 @@ class Game
   end
 
   def guess_letter(letter)
-    return unless guesses_left > 0
-    return unless letter.length == 1
-    return if already_guessed? letter
+    return unless letter? letter
+    return unless count_guess letter
 
-    @guesses_left -= 1
     @secret_word.include?(letter) ? @correct_guesses << letter : @incorrect_guesses << letter
   end
 
   def guess_word(word)
-    return unless guesses_left > 0
-    return unless word
-    return if already_guessed? word
+    return unless word? word
+    return unless count_guess word
 
-    @guesses_left -= 1
-    @secret_word == word ? @correct_guesses << word : @incorrect_guesses << word 
+    @secret_word == word ? @correct_guesses << word : @incorrect_guesses << word
   end
 
   def secret_word
     return @secret_word.split('').join(' ') if @correct_guesses.include? @secret_word
-    @secret_word.split('').map { |char| @correct_guesses.include?(char) ? "#{char} " : "_ " }.join
+
+    @secret_word.split('').map { |char| @correct_guesses.include?(char) ? "#{char} " : '_ ' }.join
   end
 
   def debug_secret_word
@@ -40,8 +37,23 @@ class Game
 
   private
 
-  def already_guessed?(guess)
-    correct_guesses.include?(guess) || incorrect_guesses.include?(guess)
+  def count_guess(guess)
+    return unless guesses_left.positive?
+    return if correct_guesses.include?(guess) || incorrect_guesses.include?(guess)
+
+    @guesses_left -= 1
+  end
+
+  def letter?(guess)
+    alpha_only_string?(guess) && guess.length == 1
+  end
+
+  def word?(guess)
+    alpha_only_string?(guess) && guess.length.positive?
+  end
+
+  def alpha_only_string?(string)
+    string.is_a?(String) && string.match?(/\A[a-z]*\z/)
   end
   # x Make a letter guess
   # x Make a word guess

@@ -22,7 +22,7 @@ p game
 # game.guess_letter('y') # Sixth guess
 # p game
 # game.guess_letter('x') # Seventh guess
-#p game
+# p game
 
 puts
 
@@ -30,7 +30,7 @@ incorrect_word = 'bubble'
 p incorrect_word
 game.guess_word incorrect_word
 p game
-game.guess_word incorrect_word # Redundant guess
+game.guess_word nil # Redundant guess
 p game
 puts game.secret_word
 
