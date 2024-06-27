@@ -3,49 +3,51 @@
 require_relative 'lib/game'
 require_relative 'lib/words'
 
-def debug(game)
-  p game
-  game.guess('a')
-  p game
-  game.guess('e')
-  p game
-  game.guess('i')
-  p game
-  game.guess('o')
-  p game
-  game.guess('o') # Redundant guess
-  p game
-  game.guess('u')
-  p game
-  game.guess('y') # Sixth guess
-  p game
-  game.guess('x') # Seventh guess
-  p game
+def head(strikes_left)
+  return 'Ø' if strikes_left.zero?
 
-  puts
-
-  incorrect_word = 'bubble'
-  p incorrect_word
-  game.guess incorrect_word
-  p game
-  game.guess nil # Redundant guess
-  p game
-  puts game.secret_word
-
-  puts
-
-  correct_word = game.debug_secret_word.clone
-  p correct_word
-  game.guess correct_word
-  p game
-  puts game.secret_word
+  strikes_left < 6 ? 'O' : ''
 end
 
-def print_game_display(game)
+def torso(strikes_left)
+  strikes_left < 5 ? '|' : ''
+end
+
+def left_arm(strikes_left)
+  strikes_left < 4 ? '/' : ' '
+end
+
+def right_arm(strikes_left)
+  strikes_left < 3 ? '\\' : ''
+end
+
+def left_leg(strikes_left)
+  strikes_left < 2 ? '/' : ' '
+end
+
+def right_leg(strikes_left)
+  strikes_left.zero? ? '\\' : ''
+end
+
+def print_visual(strikes_left)
+  sl = strikes_left
+  puts '     ╔═════╗'
+  puts '     ║     |'
+  puts "     ║     #{head sl}"
+  puts "     ║    #{left_arm sl}#{torso sl}#{right_arm sl}"
+  puts "     ║    #{left_leg sl} #{right_leg sl}"
+  puts '     ║'
+  puts '  ═══╩═══'
+end
+
+def print_display(game)
   puts "\n" * 50
-  puts "Strikes Left: #{game.incorrect_guesses.size}"
-  puts game.secret_word
-  puts "\n/m - menu\n/x - exit\nGuess a letter or word:"
+  puts "\nStrikes Left: #{game.strikes_left}"
+  # puts "DEBUG - Secret Word: #{game.secret_word}"
+  print_visual game.strikes_left
+  puts "\n#{game.secret_word_hidden}"
+  puts "\n#{game.incorrect_guesses}"
+  puts "\n_____Options_____\n/m - Main Menu\n/x - Exit\nGuess a letter or word:"
 end
 
 secret_word = Words.random_word
@@ -53,22 +55,14 @@ game = Game.new secret_word
 
 playing = true
 while playing
-  print_game_display game
+  print_display game
   input = gets.chomp.downcase
 
-  playing = false if input == '/x'
+  word_is_guessed = game.guess input
+  p word_is_guessed
+
+  playing = false if input == '/x' || game.strikes_left.zero? || word_is_guessed
 end
 
-# Strikes Left: 0
-#
-#     ╔═════╗
-#     ║     |
-#     ║     Ø
-#     ║    /|\
-#     ║    /\
-#     ║
-#  ═══╩═══
-#
-#  _ A _ D A _ _
-
-# debug game
+print_display game
+puts "\nSecret Word: #{game.secret_word}"
