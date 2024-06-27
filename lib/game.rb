@@ -2,27 +2,22 @@
 
 # Object to keep track of game state.
 class Game
-  attr_reader :correct_guesses, :guesses_left, :incorrect_guesses
+  attr_reader :correct_guesses, :incorrect_guesses
 
   def initialize(secret_word)
     @secret_word = secret_word
-    @guesses_left = 6
     @correct_guesses = []
     @incorrect_guesses = []
   end
 
-  def guess_letter(letter)
-    return unless letter? letter
-    return unless count_guess letter
+  def guess(string)
+    return unless counts? string
 
-    @secret_word.include?(letter) ? @correct_guesses << letter : @incorrect_guesses << letter
-  end
-
-  def guess_word(word)
-    return unless word? word
-    return unless count_guess word
-
-    @secret_word == word ? @correct_guesses << word : @incorrect_guesses << word
+    if string.length == 1
+      @secret_word.include?(string) ? @correct_guesses << string : @incorrect_guesses << string
+    else
+      @secret_word == string ? @correct_guesses << string : @incorrect_guesses << string
+    end
   end
 
   def secret_word
@@ -37,23 +32,20 @@ class Game
 
   private
 
-  def count_guess(guess)
-    return unless guesses_left.positive?
-    return if correct_guesses.include?(guess) || incorrect_guesses.include?(guess)
-
-    @guesses_left -= 1
+  def counts?(string)
+    guesses_left? && alpha_only?(string) && unique?(string)
   end
 
-  def letter?(guess)
-    alpha_only_string?(guess) && guess.length == 1
-  end
-
-  def word?(guess)
-    alpha_only_string?(guess) && guess.length.positive?
-  end
-
-  def alpha_only_string?(string)
+  def alpha_only?(string)
     string.is_a?(String) && string.match?(/\A[a-z]*\z/)
+  end
+
+  def guesses_left?
+    incorrect_guesses.size < 6
+  end
+
+  def unique?(string)
+    !correct_guesses.include?(string) && !incorrect_guesses.include?(string)
   end
   # x Make a letter guess
   # x Make a word guess
