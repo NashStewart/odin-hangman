@@ -36,6 +36,7 @@ Win the game by guess all the letters:
 <img width="227" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/41fe35f5-cd2f-4a08-86d1-b6798d5ca709">
 
 Or, win by guessing the word outright:
+
 <img width="230" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/37e86eca-058e-4c77-8a73-ad39d2af48c2">
 
 
