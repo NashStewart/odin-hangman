@@ -16,18 +16,23 @@ This is an assignment from [The Odin Project](https://www.theodinproject.com/les
 ## Gameplay
 
 Choose new game or load saved game:
+
 <img width="197" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/ed2b2d59-9133-49d4-8a7a-41ad9f0b46e9">
 
 Playing the game:
+
 <img width="230" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/11c32deb-a41c-4451-b5b8-195ccdb7affa">
 
 Loading saved games:
+
 <img width="365" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/ebec1690-068f-47ef-93cd-1166a3b255af">
 
 Losing the game:
+
 <img width="230" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/e05b6492-3101-4fe7-9cec-e7eacf21f3db">
 
 Win the game by guess all the letter or the entire word:
+
 <img width="227" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/41fe35f5-cd2f-4a08-86d1-b6798d5ca709">
 
 <img width="230" alt="image" src="https://github.com/NashStewart/odin-hangman/assets/12480021/37e86eca-058e-4c77-8a73-ad39d2af48c2">
