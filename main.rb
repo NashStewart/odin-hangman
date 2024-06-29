@@ -4,16 +4,15 @@ require_relative 'lib/game'
 require_relative 'lib/words'
 require_relative 'lib/printer'
 
-def save(game)
-  save_name = ''
-  while save_name.empty?
+def save(game, save_file: '')
+  while save_file.empty?
     puts "\n" * 50
     puts 'Enter save name:'
-    save_name = gets.chomp
+    save_file = gets.chomp
   end
   serialized_game = Marshal.dump game
   Dir.mkdir 'saves' unless Dir.exist? 'saves'
-  File.open("saves/#{save_name}.hangman", 'w') { |file| file.puts serialized_game }
+  File.open("saves/#{save_file.split('.')[0]}.hangman", 'w') { |file| file.puts serialized_game }
 end
 
 def print_load_menu(saves)
@@ -22,7 +21,7 @@ def print_load_menu(saves)
   saves.each_with_index { |save, index| puts "#{index + 1} - #{save.gsub('.hangman', '')}" }
 end
 
-def load(_file_name)
+def saved_file_name
   saves = Dir.entries 'saves'
   saves.select! { |save| save.include? '.hangman' }
   file_key = 0
@@ -31,7 +30,11 @@ def load(_file_name)
     file_key = gets.chomp.to_i
     file_key = 0 unless file_key.between?(1, saves.length)
   end
-  serialized_game = File.open "saves/#{saves[file_key - 1]}", 'r'
+  saves[file_key - 1]
+end
+
+def load(file_name)
+  serialized_game = File.open "saves/#{file_name}", 'r'
   # Disabled rubocop here, because this app isn't exposed to the web. So there isn't any risk.
   Marshal.load serialized_game # rubocop:disable Security/MarshalLoad
 end
@@ -41,15 +44,19 @@ def print_main_menu
   puts "Welcome to Hangman!\n\n_____Options_____\n/n - New Game\n/l - Load Game\n/x - Exit\nEnter selection:"
 end
 
-def play_game(game)
+def game_over?(game, last_input, word_is_guessed)
+  last_input == '/m' || game.strikes_left.zero? || word_is_guessed
+end
+
+def play_game(game, save_file: '')
   printer = Printer.new game
   playing = true
   while playing
     printer.print
     input = gets.chomp.downcase
     word_is_guessed = game.guess input
-    playing = false if input == '/m' || game.strikes_left.zero? || word_is_guessed
-    save game if input == '/s'
+    playing = false if game_over?(game, input, word_is_guessed)
+    save_file.empty? ? (save(game) if input == '/s') : save(game, save_file: save_file)
   end
   printer.print_end_game word_is_guessed unless input == '/m'
 end
@@ -69,8 +76,10 @@ until exited
   when '/n'
     play_new_game
   when '/l'
-    game = load 'saves/game.hangman'
-    play_game game
+    file_name = saved_file_name
+    puts file_name
+    game = load file_name
+    play_game(game, save_file: file_name)
   when '/x'
     exited = true
   end
