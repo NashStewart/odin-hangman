@@ -59,6 +59,8 @@ end
 
 def end_game(printer, word_is_guessed, save_file)
   printer.print_end_game word_is_guessed
+  return if save_file.empty?
+
   full_file_name = "saves/#{save_file}"
   File.delete(full_file_name) if File.exist? full_file_name
 end
