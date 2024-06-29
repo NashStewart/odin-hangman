@@ -2,67 +2,58 @@
 
 require_relative 'lib/game'
 require_relative 'lib/words'
+require_relative 'lib/printer'
 
-def head(strikes_left)
-  return 'Ø' if strikes_left.zero?
-
-  strikes_left < 6 ? 'O' : ''
+def save(game)
+  saved_game = Marshal.dump game
+  Dir.mkdir 'saves' unless Dir.exist? 'saves'
+  File.open('saves/game.hangman', 'w') { |file| file.puts saved_game }
 end
 
-def torso(strikes_left)
-  strikes_left < 5 ? '|' : ''
+def load(file_name)
+  serialized_game = File.open file_name, 'r'  
+  Marshal.load serialized_game
 end
 
-def left_arm(strikes_left)
-  strikes_left < 4 ? '/' : ' '
-end
-
-def right_arm(strikes_left)
-  strikes_left < 3 ? '\\' : ''
-end
-
-def left_leg(strikes_left)
-  strikes_left < 2 ? '/' : ' '
-end
-
-def right_leg(strikes_left)
-  strikes_left.zero? ? '\\' : ''
-end
-
-def print_visual(strikes_left)
-  sl = strikes_left
-  puts '     ╔═════╗'
-  puts '     ║     |'
-  puts "     ║     #{head sl}"
-  puts "     ║    #{left_arm sl}#{torso sl}#{right_arm sl}"
-  puts "     ║    #{left_leg sl} #{right_leg sl}"
-  puts '     ║'
-  puts '  ═══╩═══'
-end
-
-def print_display(game)
+def print_main_menu
   puts "\n" * 50
-  puts "\nStrikes Left: #{game.strikes_left}"
-  # puts "DEBUG - Secret Word: #{game.secret_word}"
-  print_visual game.strikes_left
-  puts "\n#{game.secret_word_hidden}"
-  puts "\n#{game.incorrect_guesses}"
-  puts "\n_____Options_____\n/m - Main Menu\n/x - Exit\nGuess a letter or word:"
+  puts "Welcome to Hangman!\n\n_____Options_____\n/n - New Game\n/l - Load Game\n/x - Exit\nEnter selection:"
 end
 
-secret_word = Words.random_word
-game = Game.new secret_word
+def play_game(game)
+  printer = Printer.new game
+  playing = true
+  while playing
+    printer.print
+    input = gets.chomp.downcase
 
-playing = true
-while playing
-  print_display game
+    word_is_guessed = game.guess input
+
+    playing = false if input == '/m' || game.strikes_left.zero? || word_is_guessed
+    save game if input == '/s'
+  end
+  printer.print_end_game word_is_guessed unless input == '/x'
+end
+
+def play_new_game
+  secret_word = Words.random_word
+  game = Game.new secret_word
+  play_game game
+end
+
+exited = false
+until exited
+  print_main_menu
   input = gets.chomp.downcase
 
-  word_is_guessed = game.guess input
-  p word_is_guessed
-
-  playing = false if input == '/x' || game.strikes_left.zero? || word_is_guessed
+  case input
+  when '/n' 
+    play_new_game
+  when '/l'
+    game = load 'saves/game.hangman'
+    play_game game
+  when '/x'
+    exited = true 
+  end
 end
 
-print_display game
-puts "\nSecret Word: #{game.secret_word}"

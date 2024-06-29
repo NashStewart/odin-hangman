@@ -36,6 +36,18 @@ class Game
     @incorrect_guesses.reduce(' ') { |string, guess| string + "#{guess}, " }
   end
 
+  def marshal_dump
+    [@secret_word, @correct_guesses, @incorrect_guesses]
+  end
+
+  def marshal_load(array)
+    @secret_word, @correct_guesses, @incorrect_guesses = array
+  end
+
+  def to_s
+    [@secret_word, @correct_guesses, @incorrect_guesses].to_s
+  end
+
   private
 
   def counts?(string)
