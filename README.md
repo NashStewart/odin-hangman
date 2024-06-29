@@ -11,4 +11,7 @@ This is an assignment from [The Odin Project](https://www.theodinproject.com/les
     - Correct guesses count towards the final guess to win the game. 
     - Too many incorrect guesses cause you to lose the game.
 - Save games to disk or load saves from previous games.
+- Auto saves games loaded from disk every turn to prevent cheating.
+
+## Gameplay
 
