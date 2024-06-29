@@ -5,14 +5,35 @@ require_relative 'lib/words'
 require_relative 'lib/printer'
 
 def save(game)
-  saved_game = Marshal.dump game
+  save_name = ''
+  while save_name.empty?
+    puts "\n" * 50
+    puts 'Enter save name:'
+    save_name = gets.chomp
+  end
+  serialized_game = Marshal.dump game
   Dir.mkdir 'saves' unless Dir.exist? 'saves'
-  File.open('saves/game.hangman', 'w') { |file| file.puts saved_game }
+  File.open("saves/#{save_name}.hangman", 'w') { |file| file.puts serialized_game }
 end
 
-def load(file_name)
-  serialized_game = File.open file_name, 'r'  
-  Marshal.load serialized_game
+def print_load_menu(saves)
+  puts "\n" * 50
+  puts 'Select a load file by entering number:'
+  saves.each_with_index { |save, index| puts "#{index + 1} - #{save.gsub('.hangman', '')}" }
+end
+
+def load(_file_name)
+  saves = Dir.entries 'saves'
+  saves.select! { |save| save.include? '.hangman' }
+  file_key = 0
+  while file_key.zero?
+    print_load_menu saves
+    file_key = gets.chomp.to_i
+    file_key = 0 unless file_key.between?(1, saves.length)
+  end
+  serialized_game = File.open "saves/#{saves[file_key - 1]}", 'r'
+  # Disabled rubocop here, because this app isn't exposed to the web. So there isn't any risk.
+  Marshal.load serialized_game # rubocop:disable Security/MarshalLoad
 end
 
 def print_main_menu
@@ -26,13 +47,11 @@ def play_game(game)
   while playing
     printer.print
     input = gets.chomp.downcase
-
     word_is_guessed = game.guess input
-
     playing = false if input == '/m' || game.strikes_left.zero? || word_is_guessed
     save game if input == '/s'
   end
-  printer.print_end_game word_is_guessed unless input == '/x'
+  printer.print_end_game word_is_guessed unless input == '/m'
 end
 
 def play_new_game
@@ -47,13 +66,12 @@ until exited
   input = gets.chomp.downcase
 
   case input
-  when '/n' 
+  when '/n'
     play_new_game
   when '/l'
     game = load 'saves/game.hangman'
     play_game game
   when '/x'
-    exited = true 
+    exited = true
   end
 end
-

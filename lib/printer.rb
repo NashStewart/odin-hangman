@@ -10,7 +10,8 @@ class Printer
     puts "\n" * 50
     print_visual
     print_info
-    print_menu if menu end
+    print_menu if menu
+  end
 
   def print_end_game(word_is_guessed)
     print menu: false
@@ -20,6 +21,8 @@ class Printer
     else
       puts "\nYou lose. :("
     end
+    puts "\nPress ENTER to Continue"
+    gets
   end
 
   private
